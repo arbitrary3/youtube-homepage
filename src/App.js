@@ -12,7 +12,7 @@ class App extends React.Component {
     super(props)
     this.state = {
       currentDate: new Date(),
-      region: "PH",
+      region: "US",
       key: "AIzaSyD7n8knDGvidtAfdIlauv_3TjIBC0asskE",
       key2: "AIzaSyCk30ae4lC5voRzAW4jiClSpqci063QPgw",
       screenWidth: 0,
@@ -287,6 +287,7 @@ class App extends React.Component {
                   mobileScreenWidth={this.state.mobileScreenWidth}  
                   ip={this.state.ip}
                   region={this.state.region}
+                  widthMode={this.state.widthMode}
           />
           <Searchbar mouseSelectIndex={this.state.mouseSelectIndex}
                      isDark={this.state.isDark} 

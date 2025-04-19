@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Topbar({ toggleMenu,mouseSelectIndex,mouseSelect, isDark, topbarHeight, navbarWidth, mobileScreenWidth, screenWidth, ip, region }) {
+export default function Topbar({ toggleMenu,mouseSelectIndex,mouseSelect, isDark, topbarHeight, navbarWidth, mobileScreenWidth, screenWidth, ip, region, widthMode }) {
     const handleMouseEnter = (id) => {
         mouseSelect(id);
     }
@@ -18,7 +18,7 @@ export default function Topbar({ toggleMenu,mouseSelectIndex,mouseSelect, isDark
       <div className="flex py-0 px-[19px] gap-2 mt-0 bg-white" 
            style={{
             "height": topbarHeight,
-            "width": navbarWidth
+            "width": widthMode === 2 ? "80px" : navbarWidth
            }}
       >
         <div className="flex h-full mr-[20px]" 

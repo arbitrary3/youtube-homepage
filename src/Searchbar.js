@@ -16,17 +16,22 @@ export default function Searchbar({ mouseSelectIndex, isDark, mouseSelect, topba
             "width": `calc(100% - ${screenWidth>=mobileScreenWidth ? navbarWidth : sidebarWidth})`,
             "height": topbarHeight,
             "pointerEvents": (toggleMenu && !(widthMode === 0)) ? "none" : "auto",
-            "backgroundColor": (toggleMenu && !(widthMode === 0)) ? "gray" : "white"
+            "backgroundColor": (toggleMenu && !(widthMode === 0)) ? "gray" : "white",
+            "gap": widthMode === 2 ? "0px" : `calc(120px * ${screenWidth / 1300})`//widthMode === 2 ? "0px" : "120px"
           }}
     >
-      <div className="flex h-full w-[68%] gap-[20px]">
+      <div className="flex h-full gap-[20px]"
+           style={{
+            "width": widthMode === 2 ? "100%" : "68%"
+           }}
+      >
         <div id="searchbar-container" className="flex border-[2px] border-[#c6c6c6] rounded-[30px] overflow-hidden my-auto"
             style={{
               "width": "82%",
               "height": searchbarHeight
             }}
        >
-          <input className="pl-[15px] w-[90%] text-[16px] lh-[20px] border-[1px] border-solid border-white" 
+          <input className="pl-[15px] w-[100%] text-[16px] lh-[20px] border-[1px] border-solid border-white" 
                  type="text" 
                  placeholder="Search" 
                  style={{
@@ -37,7 +42,7 @@ export default function Searchbar({ mouseSelectIndex, isDark, mouseSelect, topba
           <button className="flex border-l-[1px] border-l-solid" 
                   style={{//bg-white
                     "backgroundColor": "white",
-                    "width": "11%",
+                    "width": (widthMode > 0 || screenWidth < 500) ? null : "11%",
                     "height": searchbarHeight,
                     "borderRadius": "0px 30px 30px 0px"
                   }}>
@@ -83,7 +88,7 @@ export default function Searchbar({ mouseSelectIndex, isDark, mouseSelect, topba
                 onMouseLeave={handleMouseLeave}
         >
           <i className="material-symbols-outlined  w-[30px] text-[26px] font-[50] color-[#065fd4]">account_circle</i>
-          <span className="text-[13px] font-bold">Sign In</span>
+          {widthMode === 2 ? null : <span className="text-[13px] font-bold">Sign In</span>}
         </button>
       </div>
      </div>
