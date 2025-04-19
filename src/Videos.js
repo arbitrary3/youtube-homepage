@@ -2,7 +2,8 @@ import React from 'react';
 import { useEffect } from 'react';
 
 
-const Videos = React.memo(({ sidebarWidth, navbarWidth, mouseSelectIndex, isDark, toggleMenu, topbarHeight, LoadedVideoNumbers, fetchData, data, canLoad, profilePicsData, mouseSelect, screenWidth, LoadMore, mobileScreenWidth, isFullScreen}) => {
+const Videos = React.memo(({ sidebarWidth, navbarWidth, mouseSelectIndex, isDark, toggleMenu, topbarHeight, LoadedVideoNumbers, fetchData, 
+                             data, canLoad, profilePicsData, mouseSelect, screenWidth, LoadMore, mobileScreenWidth, isFullScreen, isAPILoaded}) => {
     
   useEffect(() => {
     window.addEventListener('scroll', loadMore);

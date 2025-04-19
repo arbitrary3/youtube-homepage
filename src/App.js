@@ -282,6 +282,7 @@ class App extends React.Component {
             LoadMore={this.LoadMore} 
             mobileScreenWidth={this.state.mobileScreenWidth} 
             isFullScreen={this.state.isFullScreen} 
+            isAPILoaded={this.state.isAPILoaded}
           />
         </div>
       </ErrorBoundary>

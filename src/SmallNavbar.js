@@ -34,7 +34,7 @@ export default function SmallNavbar({ mouseSelectIndex, isDark, mouseSelect, top
     });
     
     return (
-      <div className="position-fixed d-flex flex-column" style={styleMain}>
+      <div className="fixed flex flex-col" style={styleMain}>
         <a id="HomeButton2" className="text-decoration-none" href="#Menu" style={styleButtons("HomeButton2")} onMouseEnter={() => handleMouseEnter("HomeButton2")} onMouseLeave={handleMouseLeave}><i className="material-icons" style={styleIcons}>home</i>Home</a>
         <a id="ShortsButton2" className="text-decoration-none" href="#Menu" style={styleButtons("ShortsButton2")} onMouseEnter={() => handleMouseEnter("ShortsButton2")} onMouseLeave={handleMouseLeave}><i className="material-icons" style={styleIcons}>play_arrow</i>Shorts</a>
         <a id="SubscriptionsButton2" className="text-decoration-none" href="#Menu" style={styleButtons("SubscriptionsButton2")} onMouseEnter={() => handleMouseEnter("SubscriptionsButton2")} onMouseLeave={handleMouseLeave}><i className="material-symbols-outlined" style={styleIcons}>subscriptions</i>Subscriptions</a>
