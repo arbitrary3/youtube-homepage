@@ -5,6 +5,7 @@ import Searchbar from './Searchbar.js';
 import SmallNavbar from './SmallNavbar.js';
 import Topbar from './Topbar.js';
 import Videos from './Videos.js'; 
+import axios from "axios";
 
 class App extends React.Component {
   constructor(props) {
@@ -30,9 +31,13 @@ class App extends React.Component {
       profilePicsData: [],
       LoadedVideosStartIndex: 0,
       LoadedVideosEndIndex: 15,
-      initialLoad: 150,
-      isFullScreen: false,
+      initialLoad: 500,
+      widthMode: 0, //0 = fullscreen; 1 = minimized screen; 2 = mobile screen
       isAPILoaded: false,
+      ip: '',//'49.145.170.8',
+      latitude: null,
+      longitude: null,
+      error: null
     }
     this.toggleMenu = this.toggleMenu.bind(this);
     this.mouseSelect = this.mouseSelect.bind(this);
@@ -44,35 +49,95 @@ class App extends React.Component {
     this.handleResize = this.handleResize.bind(this);
     this.LoadMore = this.LoadMore.bind(this);
     this.shouldAPIUpdate = this.shouldAPIUpdate.bind(this);
+    this.getUserLocation = this.getUserLocation.bind(this);
+    this.getI18nRegion = this.getI18nRegion.bind(this);
   }
 
   componentDidMount() {
     window.addEventListener("resize", this.handleResize);
+
     this.fetchData();
     this.handleResize();
-  }
+    //this.getUserLocation();
+  } 
 
   componentWillUnmount() {
     window.removeEventListener("resize", this.handleResize);
   }
+
+  handleResize() {
+    //If full screen, the Navbar.js is visible.
+    //If not and the screenWidth is greater than the mobileScreenWidth, SmallNavbar.js is visible
+    //Else, mobile mode is activated (widthMode = 2)
+    const isFullScreen = (window.screen.width >= 1366);
+    this.setState({ screenWidth: window.innerWidth }, () => {
+      if (isFullScreen) {
+        this.setState({ widthMode: 0, toggleMenu: true });
+      } else {
+        if (this.state.screenWidth > this.state.mobileScreenWidth) {
+          this.setState({ widthMode: 1, toggleMenu: false });
+        } else {
+          this.setState({ widthMode: 2, toggleMenu: false });
+        }
+      }
+    });
+  }
+
+  async getUserLocation() {
+    try {
+      const res = await axios.get("https://api.ipify.org/?format=json");
+      const { countryCode } = res.data;
+      this.setState({ ip: res.data.ip, region: countryCode  },() => {
+        this.getI18nRegion(this.state.ip);
+      });
+    } catch (error) {
+      alert("Error fetching location");
+      console.error('Error fetching user location:', error);
+    }
+  };
+
+  async getI18nRegion(ip) {
+    try {
+      const response = await fetch(`http://ip-api.com/json/${ip}`);
+      const data = await response.json();
   
+      if (data.status === "success") {
+        const countryCode = data.countryCode;
+        alert(`IP Address: ${this.state.ip}, Country Code: ${countryCode}`);
+
+        return countryCode; // This is the i18nRegion (e.g., "US", "IN", "PH")
+      } else {
+        throw new Error("Failed to fetch region");
+      }
+    } catch (error) {
+      console.error("Error fetching i18nRegion:", error);
+      return null;
+    }
+  }
+  
+  //Toggles between Navbar.js and SmallNavbar.js
   toggleMenu() {
     this.setState(prevState => ({
       toggleMenu: !prevState.toggleMenu
     }));
   }
   
+  //MOUSE HOVER AND LEAVE ENGINE START
+  //The style attribute in every hoverable objects has a condition when mouseSelectIndex is equal to its id.
+  //So when mouseSelectIndex is "SignIn", the hover condition of the Sign In button activated 
   mouseSelect(id) {
     this.setState({
       mouseSelectIndex: id
     });
   }
   
+  //When the mouse leaves a hovered object, mouseSelectIndex goes back to null again
   mouseLeave(id) {
     this.setState({
       mouseSelectIndex: null
     });
   }  
+  //MOUSE HOVER AND LEAVE ENGINE END
 
   //FETCH DATA SECTION
   fetchData = async(endIndex) => {
@@ -193,17 +258,6 @@ class App extends React.Component {
     });
   }
   
-  handleResize() {
-    const isFullScreen = (window.screen.width >= 1366);
-    this.setState({ screenWidth: window.innerWidth }, () => {
-      if (isFullScreen) {
-        this.setState({ isFullScreen: true, toggleMenu: true });
-      } else {
-        this.setState({ isFullScreen: false, toggleMenu: false });
-      }
-    });
-  }
-  
   LoadMore() {
     this.setState(endIndex => ({
       LoadedVideosEndIndex: (this.state.LoadedVideosEndIndex + 15 < this.state.initialLoad) ? this.state.LoadedVideosEndIndex + 15 : this.state.initialLoad 
@@ -217,13 +271,13 @@ class App extends React.Component {
     const d2 = new Date(date2);
     const timeDiff = Math.abs(d2 - d1);
     const dayDiff = timeDiff / (1000 * 3600);
-    return dayDiff >= 2;
+    return dayDiff >= 1;
   }
   
   //RENDER SECTION
   render() {
     return (
-      <ErrorBoundary className="">
+      <ErrorBoundary>
         <div className="flex fixed w-full">
           <Topbar mouseSelectIndex={this.state.mouseSelectIndex}isDark={this.state.isDark} 
                   toggleMenu={this.toggleMenu} 
@@ -231,6 +285,8 @@ class App extends React.Component {
                   topbarHeight={this.state.topbarHeight} 
                   navbarWidth={this.state.navbarWidth} 
                   mobileScreenWidth={this.state.mobileScreenWidth}  
+                  ip={this.state.ip}
+                  region={this.state.region}
           />
           <Searchbar mouseSelectIndex={this.state.mouseSelectIndex}
                      isDark={this.state.isDark} 
@@ -239,7 +295,7 @@ class App extends React.Component {
                      navbarWidth={this.state.navbarWidth} 
                      toggleMenu={this.state.toggleMenu} 
                      screenWidth={this.state.screenWidth} 
-                     isFullScreen={this.state.isFullScreen} 
+                     widthMode={this.state.widthMode} 
                      mobileScreenWidth={this.state.mobileScreenWidth} 
                      sidebarWidth={this.state.sidebarWidth} 
           />
@@ -255,7 +311,7 @@ class App extends React.Component {
               generateSidebarButtons={this.generateSidebarButtons} 
               generateBottomLinks={this.generateBottomLinks} 
               marginLeft={this.state.marginLeft} 
-              isFullScreen={this.state.isFullScreen} 
+              widthMode={this.state.widthMode} 
               isSignedIn={this.state.isSignedIn}
             /> : 
             (window.innerWidth>=this.state.mobileScreenWidth ? 
@@ -281,7 +337,7 @@ class App extends React.Component {
             screenWidth={this.state.screenWidth} 
             LoadMore={this.LoadMore} 
             mobileScreenWidth={this.state.mobileScreenWidth} 
-            isFullScreen={this.state.isFullScreen} 
+            widthMode={this.state.widthMode} 
             isAPILoaded={this.state.isAPILoaded}
           />
         </div>

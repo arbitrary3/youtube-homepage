@@ -3,7 +3,7 @@ import React from 'react';
 export default class Navbar extends React.Component {
     constructor(props) {
       super(props);
-      const {mouseSelectIndex,isDark,mouseSelect,topbarHeight, navbarWidth, generateSidebarButtons, generateBottomLinks, marginLeft, isFullScreen, isSignedIn} = this.props;
+      const {mouseSelectIndex,isDark,mouseSelect,topbarHeight, navbarWidth, generateSidebarButtons, generateBottomLinks, marginLeft, widthMode, isSignedIn} = this.props;
       this.state = {
         mouseSelectIndex: null,
         scrollbarVisible: false
@@ -94,29 +94,6 @@ export default class Navbar extends React.Component {
       const styleSignInLabel = {
         "fontSize": "15px"
       }
-      const styleSignIn = (id) => ({
-        "border": this.props.mouseSelectIndex===id ? "#1px solid def1ff" : "1px solid #e5e5e5",
-        "display": "block",
-        "color": "#065fd4",
-        "backgroundColor": this.props.mouseSelectIndex===id ? "#def1ff" : "#FFFFFF",
-        "textDecoration": "none",
-        "borderRadius": "15px",
-        "width": "100px",
-        "height": "40px",
-        "lineHeight": "40px",
-        "boxSizing": "borderBox",
-        "fontWeight": id==="YouButton" ? "600" : "normal",
-        "verticalAlign": "center",
-        "fontSize": "13px",
-        "margin": "20px 18px 20px 0",
-        "padding": "0",
-      });
-      const styleContainerSignIn = {
-        "padding": "10px 26px 5px 6px",
-        "margin": `10px 0px 0px ${this.props.marginLeft}`,
-        "fontSize": "15px",
-        "borderBottom": "1px solid #e6e6e6"
-      }
       const styleBlocker = {
         "position": "fixed",
         "width": `calc(100% - ${this.props.navbarWidth})`,
@@ -135,9 +112,7 @@ export default class Navbar extends React.Component {
              onMouseLeave={() => this.setState({scrollbarVisible: false})}
         >
           
-          <div className="flex flex-col" 
-               style={styleContainer}
-          >
+          <div className="flex flex-col border-b-[1px] border-b-solid border-b-[#e6e6e6] p-[10px] mb-[5px] w-[240px]">
             {this.props.generateSidebarButtons(0, [
               ["Home", "HomeButton", "https://www.youtube.com", styleHyperlinks("HomeButton",true), "home",styleIcons],
               ["Shorts", "ShortsButton", "#", styleHyperlinks("ShortsButton"), "play_arrow",styleIcons],
@@ -157,7 +132,7 @@ export default class Navbar extends React.Component {
                 ["Liked videos", "LikedVideosButton", "#", styleHyperlinks("LikedVideosButton"), "thumb_up",styleIcons]
               ])) : 
               (this.props.generateSidebarButtons(0,[
-                ["You", "YouButton", "#", styleHyperlinks("HistoryButton"), "account_circle",styleIcons],
+                ["You", "YouButton2", "#", styleHyperlinks("YouButton2"), "account_circle",styleIcons],
                 ["History", "HistoryButton", "#", styleHyperlinks("HistoryButton"), "history",styleIcons]
               ]))
             }
@@ -255,7 +230,7 @@ export default class Navbar extends React.Component {
         
         <p style={styleCopyright}>(c) 2025 Google LLC</p>
           
-          {!this.props.isFullScreen ? <div style={styleBlocker}></div> : null}
+          {!(this.props.widthMode === 0) ? <div style={styleBlocker}></div> : null}
       </div>
       )
     }

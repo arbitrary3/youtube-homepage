@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Topbar({ toggleMenu,mouseSelectIndex,mouseSelect, isDark, topbarHeight, navbarWidth, mobileScreenWidth, screenWidth }) {
+export default function Topbar({ toggleMenu,mouseSelectIndex,mouseSelect, isDark, topbarHeight, navbarWidth, mobileScreenWidth, screenWidth, ip, region }) {
     const handleMouseEnter = (id) => {
         mouseSelect(id);
     }
@@ -14,28 +14,6 @@ export default function Topbar({ toggleMenu,mouseSelectIndex,mouseSelect, isDark
       toggleMenu();
     }  
     
-    const styleMenuIcon = {
-      //"border": "1px solid blue",
-      "margin": "3px 0px 0px 7px",
-      "fontSize": "32px",
-      "fontWeight": "200"
-    };
-    const styleMenuLink = (id) => ({
-      //"border": "1px solid red",
-      "padding": "0",
-      "width": "46px",
-      "height": "44px",
-      "color": "black",
-      "borderRadius": "50%",
-      "backgroundColor": mouseSelectIndex===id ? "#e6e6e6" : "#FFFFFF"
-    });
-    const styleMenuContainer = {
-      "paddingTop": `calc((${topbarHeight} - 40px)/2)`,
-      "height": "100%",
-      "merginRight": "20px",
-      //"backgroundColor": mouseSelectIndex==="MenuButton" ? "#e6e6e6" : "#FFFFFF"
-    }
-    
     return (
       <div className="flex py-0 px-[19px] gap-2 mt-0 bg-white" 
            style={{
@@ -43,10 +21,35 @@ export default function Topbar({ toggleMenu,mouseSelectIndex,mouseSelect, isDark
             "width": navbarWidth
            }}
       >
-        <div className="flex" style={styleMenuContainer}><a id="MenuButton" className="" onClick={hideMenu} onMouseEnter={() => handleMouseEnter("MenuButton")} onMouseLeave={handleMouseLeave} style={styleMenuLink("MenuButton")} href="#Menu"><i className="material-symbols-outlined" style={styleMenuIcon}>menu</i></a></div>
+        <div className="flex h-full mr-[20px]" 
+             style={{
+              "paddingTop": `calc((${topbarHeight} - 40px)/2)`,
+              //"backgroundColor": mouseSelectIndex==="MenuButton" ? "#e6e6e6" : "#FFFFFF"
+             }}
+        >
+          <a id="MenuButton" 
+             className="flex p-0 w-[46px] h-[44px] color-black rounded-[50%]" 
+             onClick={hideMenu} 
+             onMouseEnter={() => handleMouseEnter("MenuButton")} 
+             onMouseLeave={handleMouseLeave} 
+             style={{
+              "backgroundColor": mouseSelectIndex==="MenuButton" ? "#e6e6e6" : "#FFFFFF"
+             }} 
+             href="#Menu"
+          >
+              <span className="material-symbols-outlined m-auto text-[32px]">menu</span>
+          </a>
+        </div>
         <div className="flex items-center">
           {window.innerWidth > mobileScreenWidth ? 
-            (<img width="92" alt="YouTube logo introduced in August 2017" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/YouTube_Logo_2017.svg/128px-YouTube_Logo_2017.svg.png?20230929095411" />) : 
+            (<a className="flex gap-[10px]"
+                href="https://arbitrary3.github.io/youtube-homepage/">
+              <img width="92" 
+                   alt="YouTube logo introduced in August 2017" 
+                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/YouTube_Logo_2017.svg/128px-YouTube_Logo_2017.svg.png?20230929095411" 
+              />
+              <p className="text-[9px]">{region}</p>
+            </a>) :
             null}
         </div>
       </div>

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 
 
 const Videos = React.memo(({ sidebarWidth, navbarWidth, mouseSelectIndex, isDark, toggleMenu, topbarHeight, LoadedVideoNumbers, fetchData, 
-                             data, canLoad, profilePicsData, mouseSelect, screenWidth, LoadMore, mobileScreenWidth, isFullScreen, isAPILoaded}) => {
+                             data, canLoad, profilePicsData, mouseSelect, screenWidth, LoadMore, mobileScreenWidth, widthMode, isAPILoaded}) => {
     
   useEffect(() => {
     window.addEventListener('scroll', loadMore);
@@ -13,38 +13,97 @@ const Videos = React.memo(({ sidebarWidth, navbarWidth, mouseSelectIndex, isDark
     };
   },[])
     
+  //GENERATING VIDEOS
   const generateVideos = (startIndex,endIndex,styleVideo,styleImage,styleProfileContainer,styleTitleContainer,styleTitle,styleProfilePic) => {
-      if (!data) {canLoad=false;data=[]}
+      //If data doesn't exist , set canLoad = true
+      if (!data) {canLoad=false;data=[]};
+
       var videos = canLoad ? data.slice(startIndex,endIndex) : ["","","","","","","","",""];
       
       return videos.map((video,index) => {
-
         var videoSrc = `https://www.youtube.com/embed/${video.id}?autoplay=1&mute=1&controls=0&rel=0&showinfo=0&modestbranding=1&start=0&end=60`;
         var videoID="video"+index;
 
-        return (<a className="text-decoration-none" href="#Menu" key={index} style={styleVideo} onMouseEnter={() => mouseSelect(videoID)} onMouseLeave={() => mouseSelect(null)}>
-            {mouseSelectIndex===videoID ? (<iframe title="video" width="100%" height="calc(100% * 0.7576)" src={videoSrc} gesture="media" allow="autoplay; encrypted-media" style={{"aspectRatio": "330 / 180"}}></iframe>) : <img id={videoID} style={styleImage(videoID)} src={canLoad ? ((screenWidth<=mobileScreenWidth && screenWidth>300) ? video.snippet.thumbnails.high.url : video.snippet.thumbnails.medium.url) : ""} alt={canLoad ? video.snippet.title : ""} />}
-            <div style={{"height": "90px"}} className="flex justify-start">
-              <div className="flex align-items-center" style={styleProfileContainer}>
-                <img  style={styleProfilePic} src={canLoad ? profilePicsData[index] : ""} alt="Thumbnail" />
-              </div>
-              <div className="flex flex-col items-left p-2 mb-0 leading-relaxed" style={styleTitleContainer}>
-               <div><p className="block text-left m-0" style={styleTitle}>{canLoad ? video.snippet.title : "YouTube Video"}</p></div>
-                <div className="flex" style={styleVideoInfo}>
-                  <p className="" style={{"color": "#60608c"}}> {`${canLoad ? video.snippet.channelTitle : "YouTube User"} · `}
-                  {screenWidth >= mobileScreenWidth ? null : (
-                    <>
-                      {canLoad ? formatViews(video.statistics.viewCount) : formatViews(420)}{" "}
-                      {canLoad ? (video.statistics.viewCount === 1 ? "view" : "views") : "views"} ·{" "}
-                      {canLoad ? timeAgo(video.snippet.publishedAt) : "1 hour ago"}
-                    </>
-                  )}</p>
-                  {screenWidth>=mobileScreenWidth ? (<p className="" style={{"color": "#60608c","marginTop": "-12px"}}>{canLoad ? formatViews(video.statistics.viewCount) : formatViews(420)}{" "}
-                      {canLoad ? (video.statistics.viewCount === 1 ? "view" : "views") : "2 views"} ·{" "}
-                      {canLoad ? timeAgo(video.snippet.publishedAt) : "1 hour ago"}</p>) : null}
+        return (
+            <a className="flex flex-col gap-[8px] text-decoration-none" 
+               href="#Menu" 
+               key={index} 
+               style={styleVideo} 
+               onMouseEnter={() => mouseSelect(videoID)} 
+               onMouseLeave={() => mouseSelect(null)}
+            >
+              {/*VIDEO THUMBNAIL STARTS HERE*/}
+              {canLoad ? 
+                ((mouseSelectIndex===videoID && canLoad) ? 
+                  (<iframe title="video" 
+                           width="100%" 
+                          height="calc(100% * 0.7576)" 
+                          src={videoSrc} 
+                          gesture="media" 
+                          allow="autoplay; encrypted-media" 
+                          style={{"aspectRatio": "330 / 180"}}>
+                  </iframe>) : 
+                  <img id={videoID} 
+                       style={styleImage(videoID)} 
+                       src={canLoad ? 
+                           ((screenWidth<=mobileScreenWidth && screenWidth>300) ? 
+                              video.snippet.thumbnails.high.url : video.snippet.thumbnails.medium.url) : ""} 
+                        alt={canLoad ? video.snippet.title : ""} 
+                  />
+                ) :
+                (<div className="w-full h-[200px] bg-black rounded-lg"></div>)
+              }
+              {/*VIDEO THUMBNAIL ENDS HERE*/}
+
+              {/*VIDEO INFO STARTS HERE*/}
+              <div className="flex justify-start"
+                   style={{"height": "90px"}} 
+              >
+
+                {/*PROFILE PIC STARTS HERE*/}
+                <div className="items-center" 
+                     style={styleProfileContainer}
+                >
+                  {canLoad ? 
+                    (<img style={styleProfilePic} src={canLoad ? profilePicsData[index] : ""} alt="Thumbnail" />) : 
+                    (<div className="w-full h-full bg-[#f2f2f2] rounded-lg"></div>)
+                  }
                 </div>
-              </div>
+                {/*PROFILE PIC ENDS HERE*/}
+
+                <div className="flex flex-col items-left px-2 leading-relaxed" style={styleTitleContainer}>
+                  {/*TITLE STARTS HERE*/}
+                  <div>
+                    {canLoad ? 
+                      (<p className="block text-left m-0" style={styleTitle}>{video.snippet.title}</p>) : 
+                      (<div className="w-full h-[20px] bg-[#f2f2f2] rounded-lg"></div>)
+                    }
+                  </div>
+                  <div className="flex" style={styleVideoInfo}>
+                    {canLoad ? 
+                      (<p className="" style={{"color": "#60608c"}}> {`${canLoad ? video.snippet.channelTitle : "YouTube User"} · `}
+                        {screenWidth >= mobileScreenWidth ? null : (
+                          <>
+                            {canLoad ? formatViews(video.statistics.viewCount) : formatViews(420)}{" "}
+                            {canLoad ? (video.statistics.viewCount === 1 ? "view" : "views") : "views"} ·{" "}
+                            {canLoad ? timeAgo(video.snippet.publishedAt) : "1 hour ago"}
+                          </>
+                        )}
+                      </p>) : 
+                      (<div className="mt-[5px] w-full h-[20px] bg-[#f2f2f2] rounded-lg"></div>)
+                    }
+                    {canLoad ? 
+                      (screenWidth>=mobileScreenWidth ? 
+                        (<p className="" style={{"color": "#60608c","marginTop": "-12px"}}>
+                          {canLoad ? formatViews(video.statistics.viewCount) : formatViews(420)}{" "}
+                          {canLoad ? (video.statistics.viewCount === 1 ? "view" : "views") : "2 views"} ·{" "}
+                          {canLoad ? timeAgo(video.snippet.publishedAt) : "1 hour ago"}
+                        </p>) : null) : 
+                      (<div className="mt-[5px] w-full h-[20px] bg-[#f2f2f2] rounded-lg"></div>)}
+                  </div>
+                </div>
             </div>
+            {/*VIDEO INFO ENDS HERE*/}
           </a>);
       });
     };
@@ -93,28 +152,6 @@ const Videos = React.memo(({ sidebarWidth, navbarWidth, mouseSelectIndex, isDark
       return `${daysAgo} ${(daysAgo===1) ? "day" : "days"} ago`;
     };
     
-    const styleMain = {
-      "fontFamily": "Roboto, Serif",
-      "width": screenWidth>=mobileScreenWidth ? `calc(100% - ${(toggleMenu && isFullScreen) ? navbarWidth : sidebarWidth})` : "100%",
-      //"border": "1px solid black",
-      "textDecoration": "none",
-      "marginTop": topbarHeight,
-      "marginLeft": (toggleMenu && isFullScreen) ? navbarWidth : (screenWidth>=mobileScreenWidth ? sidebarWidth : "0px"),
-      "marginRight": screenWidth>=mobileScreenWidth ? "auto" : "0px",
-      "pointerEvents": (toggleMenu && !isFullScreen) ? "none" : "auto",
-      "backgroundColor": (toggleMenu && !isFullScreen) ? "gray" : "white"
-    }
-    
-    
-    const styleVideoContainer = {
-      "display": "grid",
-      "gap": "8px",
-      "gridTemplateColumns": screenWidth>=1080 ? "33% 33% 33%" : (screenWidth>=mobileScreenWidth ? "50% 50%": "100%"),
-      //"border": "1px solid blue",
-      "width": screenWidth>=mobileScreenWidth ? "calc(100% - 6px)" : "100%",
-      "margin": window.width>=mobileScreenWidth ? "30px auto" : "30px 0px"
-    }
-    
     const styleVideo = {
       //"border": "1px solid red",
       "width": screenWidth>=mobileScreenWidth ? "calc(100% - 10px)" : "100%",
@@ -149,26 +186,45 @@ const Videos = React.memo(({ sidebarWidth, navbarWidth, mouseSelectIndex, isDark
     const styleTitle = {
       "fontSize": (screenWidth>=300 ? "17px" : "15px"),
       "fontWeight": "500",
-      "maxHeight": "2.1em",
+      "maxHeight": "2.4em",
+      "lineHeight": "1.2em",
       "color": "black",
       "overflow": "hidden",
       "textOverflow": "ellipsis"
     }
     const styleVideoInfo = {
-      "marginTop": "7px",
+      "marginTop": "0px",
       //"border": "1px solid red",
-      "flexDirection": screenWidth>=mobileScreenWidth ? "column" : null
+      "flexDirection": screenWidth>=mobileScreenWidth ? "column" : null,
+      "gap": "5px"
     }
     
     
     return (
-      <div id="videoContainer" style={styleMain}>         
-        <div className="" style={styleVideoContainer}> {generateVideos(0,LoadedVideoNumbers,styleVideo,styleImage,styleProfileContainer,styleTitleContainer,styleTitle,styleProfilePic)}
+      <div id="videoContainer" 
+           className="font-roboto text-decoration-none"
+           style={{//
+            "width": screenWidth>=mobileScreenWidth ? `calc(100% - ${(toggleMenu && (widthMode === 0)) ? navbarWidth : sidebarWidth})` : "100%",
+            "marginTop": topbarHeight,
+            "marginLeft": (toggleMenu && (widthMode === 0)) ? `calc(${navbarWidth} + 7px)` : (screenWidth>=mobileScreenWidth ? sidebarWidth : "0px"),
+            "marginRight": screenWidth>=mobileScreenWidth ? "auto" : "0px",
+            "pointerEvents": (toggleMenu && !(widthMode === 0)) ? "none" : "auto",
+            "backgroundColor": (toggleMenu && !(widthMode === 0)) ? "gray" : "white"
+          }}
+    >         
+        <div className="grid gap-[8px]" 
+             style={{
+              "gridTemplateColumns": screenWidth>=1080 ? "33% 33% 33%" : (screenWidth>=mobileScreenWidth ? "50% 50%": "100%"),
+              "width": screenWidth>=mobileScreenWidth ? "calc(100% - 6px)" : "100%",
+              "margin": window.width>=mobileScreenWidth ? "30px auto" : "30px 0px"
+            }}
+        > 
+          {generateVideos(0,LoadedVideoNumbers,styleVideo,styleImage,styleProfileContainer,styleTitleContainer,styleTitle,styleProfilePic)}
         </div>
       </div>
     );
   }, (prevProps,nextProps) => {
-       return (prevProps.toggleMenu === nextProps.toggleMenu && prevProps.LoadedVideoNumbers === nextProps.LoadedVideoNumbers && prevProps.screenWidth === nextProps.screenWidth && prevProps.mouseSelectIndex === nextProps.mouseSelectIndex && prevProps.data === nextProps.data && prevProps.profilePicsData === nextProps.profilePicsData && prevProps.isFullScreen === nextProps.isFullScreen)
+       return (prevProps.toggleMenu === nextProps.toggleMenu && prevProps.LoadedVideoNumbers === nextProps.LoadedVideoNumbers && prevProps.screenWidth === nextProps.screenWidth && prevProps.mouseSelectIndex === nextProps.mouseSelectIndex && prevProps.data === nextProps.data && prevProps.profilePicsData === nextProps.profilePicsData && prevProps.widthMode === nextProps.widthMode)
      }
 );
 

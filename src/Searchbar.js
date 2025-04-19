@@ -1,4 +1,4 @@
-export default function Searchbar({ mouseSelectIndex, isDark, mouseSelect, topbarHeight, navbarWidth, toggleMenu, screenWidth, isFullScreen, mobileScreenWidth, sidebarWidth }) {
+export default function Searchbar({ mouseSelectIndex, isDark, mouseSelect, topbarHeight, navbarWidth, toggleMenu, screenWidth, widthMode, mobileScreenWidth, sidebarWidth }) {
     const searchbarHeight = "45px";
     
     const handleMouseEnter = (id) => {
@@ -15,8 +15,8 @@ export default function Searchbar({ mouseSelectIndex, isDark, mouseSelect, topba
             //"border": "1px solid red",
             "width": `calc(100% - ${screenWidth>=mobileScreenWidth ? navbarWidth : sidebarWidth})`,
             "height": topbarHeight,
-            "pointerEvents": (toggleMenu && !isFullScreen) ? "none" : "auto",
-            "backgroundColor": (toggleMenu && !isFullScreen) ? "gray" : "white"
+            "pointerEvents": (toggleMenu && !(widthMode === 0)) ? "none" : "auto",
+            "backgroundColor": (toggleMenu && !(widthMode === 0)) ? "gray" : "white"
           }}
     >
       <div className="flex h-full w-[68%] gap-[20px]">
@@ -46,7 +46,7 @@ export default function Searchbar({ mouseSelectIndex, isDark, mouseSelect, topba
         </div>
         
         {screenWidth>=mobileScreenWidth ? 
-          (<div className="my-auto">
+          (<div className="relative my-auto">
             <button id="MicButton" 
                className="flex w-[40px] h-[40px] p-1 rounded-[50%]"
                 href="#mENU" 
@@ -56,15 +56,24 @@ export default function Searchbar({ mouseSelectIndex, isDark, mouseSelect, topba
                 onMouseEnter={() => handleMouseEnter("MicButton")} 
                 onMouseLeave={handleMouseLeave}>
                   <i className="material-symbols-outlined self-center m-auto">mic</i>
+                  {mouseSelectIndex==="MicButton" ? 
+                    <p className="absolute w-[150px] top-[50px] left-[-60px] bg-black p-2 rounded-md text-white text-[13px]">Search with your voice</p> : 
+                    null}
             </button>
           </div>) : null}
       </div>
        
        
       <div className="flex gap-[10px]">
-        <i class="material-symbols-outlined my-auto">
-          more_vert
-        </i>
+        <button className="relative h-full my-auto"
+                onMouseEnter={() => handleMouseEnter("SettingsButton")}
+                onMouseLeave={handleMouseLeave}
+        >
+          <i class="material-symbols-outlined my-auto">more_vert</i>
+          {mouseSelectIndex==="SettingsButton" ? 
+            <p className="absolute top-[45px] left-[-20px] bg-black p-2.5 rounded-md text-white text-[13px]">Settings</p> : 
+            null}
+        </button>
         <button id="SignInButton2" 
                 className="flex gap-[8px] items-center justify-center text-blue-500 py-[4px] px-[5px] border-2 border-solid rounded-[30px]"
                 style={{
